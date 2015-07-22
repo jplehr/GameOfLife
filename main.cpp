@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <cassert>
 
+#ifdef PAPI_MEASUREMENT
+	#include "PapiInstance.h"
+#endif
+
 struct InitFunction {
 	int operator()(int i, int j){
 		const int v = (j-i > 0)?j-i:1;
@@ -137,6 +141,13 @@ int GameOfLife::getNumLiveNeighbors(int i, int j){
 
 
 int main(int argc, char **argv){
+#ifdef PAPI_MEASUREMENT
+	Papi papi;
+	PapiInstance *instance = papi.create();
+	instance->addEvent(PAPI_TOT_INS);
+	instance->addEvent(PAPI_BR_MSP);
+	instance->start();
+#endif
 
 	GameOfLife gof(100, 100);
 	gof.init();
@@ -145,6 +156,12 @@ int main(int argc, char **argv){
 		gof.tick();
 	}
 	gof.print(std::cout);
+
+#ifdef PAPI_MEASUREMENT
+	instance->stop();
+	std::cout << "\nThe measured total instructions were: " << instance->getEventValue(PAPI_TOT_INS) << "\n";
+	std::cout << "The measured mispredicted branches were: " << instance->getEventValue(PAPI_BR_MSP) << std::endl;
+#endif
 
 	return 0;
 }
