@@ -6,10 +6,15 @@ PAPI_LIB_DIR=$(PAPI_BASE_DIR)/lib
 PAPI_INC_FLAGS=-I$(PAPI_INC_DIR) -I$(HOME)/all_repos/jplehr-c++PaPi -DPAPI_MEASUREMENT
 PAPI_LD_FLAGS=-L$(PAPI_LIB_DIR) -L$(HOME)/all_repos/jplehr-c++PaPi -lpapicpp -lpapi
 
-all: gof gof-papi
+CXXFLAGS=-I. -std=c++11
 
-gof: main.cpp
-	$(CXX) -std=c++11 main.cpp -o gof
+all: gol gof-papi
+
+gol: main.cpp
+	$(CXX) $(CXXFLAGS)  main.cpp -o gol
+
+gol-templ: TemplateMain.cpp
+	$(CXX) $(CXXFLAGS) TemplateMain.cpp -o gol-templ
 
 gof-papi: main.cpp
 	$(CXX) -std=c++11 $(PAPI_INC_FLAGS) main.cpp -o gof-papi $(PAPI_LD_FLAGS)
