@@ -9,7 +9,7 @@ int main(int argc, char **argv){
 	instance->start();
 #endif
 
-	GameOfLife gof(10000, 10000);
+	GameOfLife gof(1000, 1000);
 	gof.init();
 //	gof.print(std::cout);
 	for(int i = 0; i < 100; ++i){
