@@ -1,4 +1,4 @@
-#include "SerialGoL.h"
+#include "OpenMPGol.h"
 
 int main(int argc, char **argv){
 #ifdef PAPI_MEASUREMENT
@@ -9,7 +9,7 @@ int main(int argc, char **argv){
 	instance->start();
 #endif
 
-	GameOfLife gof(5000, 5000);
+	OpenMPGameOfLife gof(5000, 5000);
 	gof.init();
 //	gof.print(std::cout);
 	for(int i = 0; i < 100; ++i){

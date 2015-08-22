@@ -1,4 +1,4 @@
-#include "SerialTemplateGoL.h"
+#include "OpenMPTemplateGol.h"
 
 struct InitFunc {
 	public:
@@ -10,7 +10,7 @@ struct InitFunc {
 
 int main(int argc, char **argv){
 
-	GameOfLife<char, GoLStencil<char>> gol(5000, 5000);
+	OpenMPGameOfLife<char, GoLStencil<char>> gol(5000, 5000);
 	MyInit f;
 	gol.init(f);
 

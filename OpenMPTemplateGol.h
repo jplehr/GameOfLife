@@ -113,10 +113,11 @@ struct MyInit {
  * Maybe usefull for some measurements?
  */
 template<typename DType, typename Stencil>
-class GameOfLife {
+class OpenMPGameOfLife {
 
 	public:
-		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY), s(dimX, dimY){}
+
+		OpenMPGameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY), s(dimX, dimY){}
 
 		template<typename CallableInitFunc>
 		void init(CallableInitFunc f);
@@ -132,8 +133,10 @@ class GameOfLife {
 };
 
 template<typename DType, typename Stencil>
-void GameOfLife<DType, Stencil>::tick(){
+void OpenMPGameOfLife<DType, Stencil>::tick(){
 	std::vector<DType> newGrid(dimX * dimY);
+
+	#pragma omp parallel for shared(newGrid)
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
 			s.apply(i, j, grid, newGrid);
@@ -145,7 +148,7 @@ void GameOfLife<DType, Stencil>::tick(){
 
 template<typename DType, typename Stencil>
 template<typename CallableInitFunc>
-void GameOfLife<DType, Stencil>::init(CallableInitFunc f){
+void OpenMPGameOfLife<DType, Stencil>::init(CallableInitFunc f){
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
 			int idx = util::getIdx(i, j, dimX);
@@ -155,7 +158,7 @@ void GameOfLife<DType, Stencil>::init(CallableInitFunc f){
 }
 
 template<typename DType, typename Stencil>
-void GameOfLife<DType, Stencil>::print(std::ostream &out){
+void OpenMPGameOfLife<DType, Stencil>::print(std::ostream &out){
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
 			out << grid.at(util::getIdx(i, j, dimX));

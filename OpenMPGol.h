@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cassert>
+#include <omp.h>
 
 #ifdef PAPI_MEASUREMENT
 	#include "PapiInstance.h"
@@ -19,10 +20,10 @@ struct InitFunction {
  * Some playground stuff.
  * Maybe usefull for some measurements?
  */
-class GameOfLife {
+class OpenMPGameOfLife {
 
 	public:
-		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY){}
+		OpenMPGameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY){}
 
 		void init();
 		void print(std::ostream &out);
@@ -38,8 +39,10 @@ class GameOfLife {
 		std::vector<char> grid;
 };
 
-void GameOfLife::tick(){
+void OpenMPGameOfLife::tick(){
 	std::vector<char> newGrid(dimX * dimY);
+
+	#pragma omp parallel for shared(newGrid)
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
 			applyRules(i, j, newGrid);
@@ -49,7 +52,7 @@ void GameOfLife::tick(){
 	std::swap(grid, newGrid);
 }
 
-void GameOfLife::init(){
+void OpenMPGameOfLife::init(){
 	InitFunction func;
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
@@ -63,7 +66,7 @@ void GameOfLife::init(){
 	}
 }
 
-void GameOfLife::print(std::ostream &out){
+void OpenMPGameOfLife::print(std::ostream &out){
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
 			out << (grid.at(getIdx(i, j)) == 'l'? "1 " : "0 ");
@@ -73,7 +76,7 @@ void GameOfLife::print(std::ostream &out){
 	out << std::endl;
 }
 
-void GameOfLife::applyRules(int i, int j, std::vector<char> &newGrid){
+void OpenMPGameOfLife::applyRules(int i, int j, std::vector<char> &newGrid){
 	int numLiveNeighbors = getNumLiveNeighbors(i, j);
 
 	int idx = getIdx(i, j);
@@ -103,11 +106,11 @@ void GameOfLife::applyRules(int i, int j, std::vector<char> &newGrid){
 	newGrid.at(idx) = grid.at(idx);
 }
 
-int GameOfLife::getIdx(int i, int j){
+int OpenMPGameOfLife::getIdx(int i, int j){
 	return j * dimX + i;
 }
 
-int GameOfLife::getNumLiveNeighbors(int i, int j){
+int OpenMPGameOfLife::getNumLiveNeighbors(int i, int j){
 	int neighbors = 0;
 	int idx = getIdx(i, j);
 
