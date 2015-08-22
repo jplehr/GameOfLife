@@ -14,7 +14,7 @@ gol: main.cpp
 	$(CXX) $(CXXFLAGS)  main.cpp -o gol
 
 gol-templ: TemplateMain.cpp
-	$(CXX) $(CXXFLAGS) TemplateMain.cpp -o gol-templ
+	$(CXX) $(CXXFLAGS) -g -Og TemplateMain.cpp -o gol-templ
 
 gof-papi: main.cpp
 	$(CXX) -std=c++11 $(PAPI_INC_FLAGS) main.cpp -o gof-papi $(PAPI_LD_FLAGS)

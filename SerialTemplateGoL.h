@@ -7,130 +7,49 @@
 	#include "PapiInstance.h"
 #endif
 
+namespace util{
+	static int getIdx(const int i, const int j, const int dimX){
+		return j * dimX + i;
+	}
+}
+
 struct InitFunction {
-	int operator()(int i, int j){
+	int operator()(const int i, const int j){
 		const int v = (j-i > 0)?j-i:1;
 		int r = (i+j) / (1 + v);
 		return (r == 0) ? i+1 : r;
 	}
 };
 
-/**
- * Some playground stuff.
- * Maybe usefull for some measurements?
- */
 template<typename DType>
-class GameOfLife {
-
+class GoLStencil {
 	public:
-		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY){}
+		GoLStencil(int dimX, int dimY) : dimX(dimX), dimY(dimY) {};
 
-		template<typename CallableInitFunc>
-		void init(CallableInitFunc f);
-		void print(std::ostream &out);
-
-		void tick();
+		void apply(const int i, const int j, const std::vector<DType> &grid, std::vector<DType> &newGrid);
 
 	private:
-		void applyRules(int i, int j, std::vector<DType> &newGrid);
-		int getNumLiveNeighbors(int i, int j);
-		int getIdx(int i, int j);
-
+		int getNumLiveNeighbors(const int i, const int j, const std::vector<DType> &grid);
 		int dimX, dimY;
-		std::vector<DType> grid;
 };
 
-template<typename DType>
-void GameOfLife<DType>::tick(){
-	std::vector<DType> newGrid(dimX * dimY);
-	for(int i = 0; i < dimX; ++i){
-		for(int j = 0; j < dimY; ++j){
-			applyRules(i, j, newGrid);
-		}
-	}
-
-	std::swap(grid, newGrid);
-}
 
 template<typename DType>
-template<typename CallableInitFunc>
-void GameOfLife<DType>::init(CallableInitFunc f){
-	for(int i = 0; i < dimX; ++i){
-		for(int j = 0; j < dimY; ++j){
-			int idx = getIdx(i, j);
-			grid.at(idx) = f(i, j);
-		}
-	}
-}
-
-template<typename DType>
-void GameOfLife<DType>::print(std::ostream &out){
-	for(int i = 0; i < dimX; ++i){
-		for(int j = 0; j < dimY; ++j){
-			out << grid.at(getIdx(i, j));
-		}
-		out << "\n";
-	}
-	out << std::endl;
-}
-
-template<typename DType>
-void GameOfLife<DType>::applyRules(int i, int j, std::vector<DType> &newGrid){
-	int numLiveNeighbors = getNumLiveNeighbors(i, j);
-
-	int idx = getIdx(i, j);
-	bool caseVisited;
-
-	if(grid.at(idx) == 'l' && numLiveNeighbors < 2){
-		newGrid.at(idx) = 'd';
-		caseVisited = true;
-	}
-
-	if(grid.at(idx) == 'l'){
-		if(numLiveNeighbors == 2 || numLiveNeighbors == 3){
-			newGrid.at(idx) = 'l';
-			caseVisited = true;
-		}
-	}
-
-	if(grid.at(idx) == 'l' && numLiveNeighbors > 3){
-		newGrid.at(idx) = 'd';
-		caseVisited = true;
-	}
-
-	if(grid.at(idx) == 'd' && numLiveNeighbors == 3){
-		newGrid.at(idx) = 'l';
-		caseVisited = true;
-	}
-
-	if(!caseVisited){
-		newGrid.at(idx) = grid.at(idx);
-		caseVisited = true;
-	}
-
-	assert(caseVisited && "I assume that all grid points are processed with one of the cases.");
-}
-
-template<typename DType>
-int GameOfLife<DType>::getIdx(int i, int j){
-	return j * dimX + i;
-}
-
-template<typename DType>
-int GameOfLife<DType>::getNumLiveNeighbors(int i, int j){
+int GoLStencil<DType>::getNumLiveNeighbors(const int i, const int j, const std::vector<DType> &grid){
 	int neighbors = 0;
-	int idx = getIdx(i, j);
+	int idx = util::getIdx(i, j, dimX);
 
-	int n = getIdx(i-1, j);
-	int ne = getIdx(i-1, j+1);
-	int e = getIdx(i, j+1);
-	int se = getIdx(i+1, j+1);
-	int s = getIdx(i+1, j);
-	int sw = getIdx(i+1, j-1);
-	int w = getIdx(i, j-1);
-	int nw = getIdx(i-1, j-1);
+	int n = util::getIdx(i-1, j, dimX);
+	int ne = util::getIdx(i-1, j+1, dimX);
+	int e = util::getIdx(i, j+1, dimX);
+	int se = util::getIdx(i+1, j+1, dimX);
+	int s = util::getIdx(i+1, j, dimX);
+	int sw = util::getIdx(i+1, j-1, dimX);
+	int w = util::getIdx(i, j-1, dimX);
+	int nw = util::getIdx(i-1, j-1, dimX);
 
 	auto neighborElems = {n, ne, e, se, s , sw, w, nw};
+
 	for(const auto &neighbor : neighborElems){
 		if(neighbor >= 0 && neighbor < grid.size()){
 			if(grid.at(neighbor) == 'l'){
@@ -140,6 +59,107 @@ int GameOfLife<DType>::getNumLiveNeighbors(int i, int j){
 	}
 
 	return neighbors;
+}
+
+
+template<typename DType>
+void GoLStencil<DType>::apply(const int i, const int j, const std::vector<DType> &grid, std::vector<DType> &newGrid){
+	int numLiveNeighbors = getNumLiveNeighbors(i, j, grid);
+
+	int idx = util::getIdx(i, j, dimX);
+
+	if(grid.at(idx) == 'l' && numLiveNeighbors < 2){
+		newGrid.at(idx) = 'd';
+		return;
+	}
+
+	if(grid.at(idx) == 'l'){
+		if(numLiveNeighbors == 2 || numLiveNeighbors == 3){
+			newGrid.at(idx) = 'l';
+			return;
+		}
+	}
+
+	if(grid.at(idx) == 'l' && numLiveNeighbors > 3){
+		newGrid.at(idx) = 'd';
+		return;
+	}
+
+	if(grid.at(idx) == 'd' && numLiveNeighbors == 3){
+		newGrid.at(idx) = 'l';
+		return;
+	}
+	newGrid.at(idx) = grid.at(idx);
+}
+
+struct MyInit {
+	public:
+		char operator()(int i, int j, int dimX, int dimY){
+			InitFunction func;
+			int idx = util::getIdx(i, j, dimX);
+			if(idx % func(i, j) == 0){
+				return 'l';
+			} else {
+				return 'd';
+			}
+		}
+};
+
+/**
+ * Some playground stuff.
+ * Maybe usefull for some measurements?
+ */
+template<typename DType, typename Stencil>
+class GameOfLife {
+
+	public:
+		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY), s(dimX, dimY){}
+
+		template<typename CallableInitFunc>
+		void init(CallableInitFunc f);
+
+		void print(std::ostream &out);
+
+		void tick();
+
+	private:
+		int dimX, dimY;
+		std::vector<DType> grid;
+		Stencil s;
+};
+
+template<typename DType, typename Stencil>
+void GameOfLife<DType, Stencil>::tick(){
+	std::vector<DType> newGrid(dimX * dimY);
+	for(int i = 0; i < dimX; ++i){
+		for(int j = 0; j < dimY; ++j){
+			s.apply(i, j, grid, newGrid);
+		}
+	}
+
+	std::swap(grid, newGrid);
+}
+
+template<typename DType, typename Stencil>
+template<typename CallableInitFunc>
+void GameOfLife<DType, Stencil>::init(CallableInitFunc f){
+	for(int i = 0; i < dimX; ++i){
+		for(int j = 0; j < dimY; ++j){
+			int idx = util::getIdx(i, j, dimX);
+			grid.at(idx) = f(i, j, dimX, dimY);
+		}
+	}
+}
+
+template<typename DType, typename Stencil>
+void GameOfLife<DType, Stencil>::print(std::ostream &out){
+	for(int i = 0; i < dimX; ++i){
+		for(int j = 0; j < dimY; ++j){
+			out << grid.at(util::getIdx(i, j, dimX));
+		}
+		out << "\n";
+	}
+	out << std::endl;
 }
 
 

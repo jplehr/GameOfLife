@@ -10,13 +10,13 @@ struct InitFunc {
 
 int main(int argc, char **argv){
 
-	GameOfLife<double> gol(10, 10);
-	InitFunc f;
+	GameOfLife<char, GoLStencil<char>> gol(10, 10);
+	MyInit f;
 	gol.init(f);
 
 	gol.print(std::cout);
 
-	for(int i = 0; i != 10; ++i){
+	for(int i = 0; i < 2; ++i){
 		gol.tick();
 	}
 
