@@ -22,7 +22,7 @@ struct InitFunction {
 class GameOfLife {
 
 	public:
-		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY){}
+		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), gridA(dimX*dimY), gridB(dimX*dimY){}
 
 		void init();
 		void print(std::ostream &out);
@@ -35,18 +35,17 @@ class GameOfLife {
 		int getIdx(int i, int j);
 
 		int dimX, dimY;
-		std::vector<char> grid;
+		std::vector<char> gridA, gridB;
 };
 
 void GameOfLife::tick(){
-	std::vector<char> newGrid(dimX * dimY);
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
-			applyRules(i, j, newGrid);
+			applyRules(i, j, gridB);
 		}
 	}
 
-	std::swap(grid, newGrid);
+	std::swap(gridA, gridB);
 }
 
 void GameOfLife::init(){
@@ -55,9 +54,9 @@ void GameOfLife::init(){
 		for(int j = 0; j < dimY; ++j){
 			int idx = getIdx(i, j);
 			if(idx % func(i, j) == 0){
-				grid.at(idx) = 'l';
+				gridA.at(idx) = 'l';
 			} else {
-				grid.at(idx) = 'd';
+				gridA.at(idx) = 'd';
 			}
 		}
 	}
@@ -66,7 +65,7 @@ void GameOfLife::init(){
 void GameOfLife::print(std::ostream &out){
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
-			out << (grid.at(getIdx(i, j)) == 'l'? "1 " : "0 ");
+			out << (gridA.at(getIdx(i, j)) == 'l'? "1 " : "0 ");
 		}
 		out << "\n";
 	}
@@ -78,29 +77,29 @@ void GameOfLife::applyRules(int i, int j, std::vector<char> &newGrid){
 
 	int idx = getIdx(i, j);
 
-	if(grid.at(idx) == 'l' && numLiveNeighbors < 2){
+	if(gridA.at(idx) == 'l' && numLiveNeighbors < 2){
 		newGrid.at(idx) = 'd';
 		return;
 	}
 
-	if(grid.at(idx) == 'l'){
+	if(gridA.at(idx) == 'l'){
 		if(numLiveNeighbors == 2 || numLiveNeighbors == 3){
 			newGrid.at(idx) = 'l';
 			return;
 		}
 	}
 
-	if(grid.at(idx) == 'l' && numLiveNeighbors > 3){
+	if(gridA.at(idx) == 'l' && numLiveNeighbors > 3){
 		newGrid.at(idx) = 'd';
 		return;
 	}
 
-	if(grid.at(idx) == 'd' && numLiveNeighbors == 3){
+	if(gridA.at(idx) == 'd' && numLiveNeighbors == 3){
 		newGrid.at(idx) = 'l';
 		return;
 	}
 
-	newGrid.at(idx) = grid.at(idx);
+	newGrid.at(idx) = gridA.at(idx);
 }
 
 int GameOfLife::getIdx(int i, int j){
@@ -122,8 +121,8 @@ int GameOfLife::getNumLiveNeighbors(int i, int j){
 
 	auto neighborElems = {n, ne, e, se, s , sw, w, nw};
 	for(const auto &neighbor : neighborElems){
-		if(neighbor >= 0 && neighbor < grid.size()){
-			if(grid.at(neighbor) == 'l'){
+		if(neighbor >= 0 && neighbor < gridA.size()){
+			if(gridA.at(neighbor) == 'l'){
 				neighbors++;
 			}
 		}

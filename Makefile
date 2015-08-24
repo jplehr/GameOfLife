@@ -8,7 +8,9 @@ PAPI_LD_FLAGS=-L$(PAPI_LIB_DIR) -L$(HOME)/all_repos/jplehr-c++PaPi -lpapicpp -lp
 
 CXXFLAGS=-I. -std=c++11
 
-all: gol gol-templ gol-papi gol-omp gol-templ-omp
+all: gol gol-templ gol-omp gol-templ-omp
+
+extra: gol-papi 
 
 gol: main.cpp
 	$(CXX) $(CXXFLAGS) -O3 main.cpp -o gol

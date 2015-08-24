@@ -93,6 +93,8 @@ void GoLStencil<DType>::apply(const int i, const int j, const std::vector<DType>
 		newGrid.at(idx) = 'l';
 		return;
 	}
+
+	newGrid.at(idx) = grid.at(idx);
 }
 
 struct MyInit {
@@ -116,7 +118,7 @@ template<typename DType, typename Stencil>
 class GameOfLife {
 
 	public:
-		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), grid(dimX*dimY), s(dimX, dimY){}
+		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), gridA(dimX*dimY), gridB(dimX*dimY), s(dimX, dimY){}
 
 		template<typename CallableInitFunc>
 		void init(CallableInitFunc f);
@@ -127,20 +129,19 @@ class GameOfLife {
 
 	private:
 		int dimX, dimY;
-		std::vector<DType> grid;
+		std::vector<DType> gridA, gridB;
 		Stencil s;
 };
 
 template<typename DType, typename Stencil>
 void GameOfLife<DType, Stencil>::tick(){
-	std::vector<DType> newGrid(dimX * dimY);
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
-			s.apply(i, j, grid, newGrid);
+			s.apply(i, j, gridA, gridB);
 		}
 	}
 
-	std::swap(grid, newGrid);
+	std::swap(gridA, gridB);
 }
 
 template<typename DType, typename Stencil>
@@ -149,7 +150,7 @@ void GameOfLife<DType, Stencil>::init(CallableInitFunc f){
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
 			int idx = util::getIdx(i, j, dimX);
-			grid.at(idx) = f(i, j, dimX, dimY);
+			gridA.at(idx) = f(i, j, dimX, dimY);
 		}
 	}
 }
@@ -158,7 +159,7 @@ template<typename DType, typename Stencil>
 void GameOfLife<DType, Stencil>::print(std::ostream &out){
 	for(int i = 0; i < dimX; ++i){
 		for(int j = 0; j < dimY; ++j){
-			out << grid.at(util::getIdx(i, j, dimX));
+			out << gridA.at(util::getIdx(i, j, dimX));
 		}
 		out << "\n";
 	}
