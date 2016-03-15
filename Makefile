@@ -16,7 +16,8 @@ gol: main.cpp
 	$(CXX) $(CXXFLAGS) -O3 main.cpp -o gol
 gol-omp: ompMain.cpp
 	$(CXX) $(CXXFLAGS) -O3 -fopenmp ompMain.cpp -o gol-omp
-
+gol-finstr: main.cpp
+	$(CXX) $(CXXFLAGS) -finstrument-functions -O3 main.cpp -o gol-finstr
 
 
 gol-templ: TemplateMain.cpp
