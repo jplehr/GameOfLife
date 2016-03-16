@@ -3,8 +3,8 @@ PAPI_BASE_DIR=/opt/papi/install
 PAPI_INC_DIR=$(PAPI_BASE_DIR)/include
 PAPI_LIB_DIR=$(PAPI_BASE_DIR)/lib
 
-PAPI_INC_FLAGS=-I$(PAPI_INC_DIR) -I$(HOME)/Documents/all_repos/jplehr-PapiWrapper -DPAPI_MEASUREMENT
-PAPI_LD_FLAGS=-L$(PAPI_LIB_DIR) -L$(HOME)/Documents/all_repos/jplehr-PapiWrapper -lpapicpp -lpapi
+PAPI_INC_FLAGS=-I$(PAPI_INC_DIR) -I$(HOME)/all_repos/jplehr-c++PaPi -DPAPI_MEASUREMENT
+PAPI_LD_FLAGS=-L$(PAPI_LIB_DIR) -L$(HOME)/all_repos/jplehr-c++PaPi -lpapicpp -lpapi
 
 CXXFLAGS=-I. -std=c++11 -Wall -pedantic
 
@@ -29,10 +29,10 @@ gol-templ-omp: ompTemplateMain.cpp
 
 
 gol-papi: main.cpp
-	$(CXX) $(CXXFLAGS) $(PAPI_INC_FLAGS) main.cpp -o gol-papi $(PAPI_LD_FLAGS)
+	$(CXX) $(CXXFLAGS) -O2 $(PAPI_INC_FLAGS) main.cpp -o gol-papi $(PAPI_LD_FLAGS)
 
 gol-papi-finstr: main.cpp
-	$(CXX) $(CXXFLAGS) -finstrument-functions $(PAPI_INC_FLAGS) main.cpp -o gol-papi-finstr $(PAPI_LD_FLAGS) -lem
+	$(CXX) $(CXXFLAGS) -O2 -finstrument-functions $(PAPI_INC_FLAGS) main.cpp -o gol-papi-finstr $(PAPI_LD_FLAGS)
 
 
 clean:
