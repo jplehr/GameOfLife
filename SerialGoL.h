@@ -4,7 +4,17 @@
 #include <cassert>
 
 #ifdef PAPI_MEASUREMENT
-	#include "PapiInstance.h"
+//	#include "PapiInstance.h"
+
+extern "C" {
+
+	void PapiW_start() __attribute__((no_instrument_function));
+	void PapiW_stopAndPrint() __attribute__((no_instrument_function));
+
+}
+
+
+
 #endif
 
 struct InitFunction {
