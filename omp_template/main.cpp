@@ -10,7 +10,7 @@ struct InitFunc {
 
 int main(int argc, char **argv){
 
-	OpenMPGameOfLife<char, GoLStencil<char>> gol(5000, 5000);
+	OpenMPGameOfLife<char, GoLStencil<char>> gol(500, 500);
 	MyInit f;
 	gol.init(f);
 

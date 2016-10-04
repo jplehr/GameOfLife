@@ -5,7 +5,7 @@ int main(int argc, char **argv){
 	PapiW_start();
 #endif
 
-	GameOfLife gof(150,150);
+	GameOfLife gof(450,450);
 	gof.init();
 	for(int i = 0; i < 100; ++i){
 		gof.tick();
