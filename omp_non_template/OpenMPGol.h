@@ -32,10 +32,10 @@ class OpenMPGameOfLife {
 
 	private:
 		void applyRules(int i, int j, std::vector<char> &newGrid);
-		int getNumLiveNeighbors(int i, int j);
-		int getIdx(int i, int j);
+		const int getNumLiveNeighbors(int i, int j) const;
+		const int getIdx(int i, int j) const;
 
-		int dimX, dimY;
+		const int dimX, dimY;
 		std::vector<char> grid;
 };
 
@@ -106,13 +106,12 @@ void OpenMPGameOfLife::applyRules(int i, int j, std::vector<char> &newGrid){
 	newGrid.at(idx) = grid.at(idx);
 }
 
-int OpenMPGameOfLife::getIdx(int i, int j){
+const int OpenMPGameOfLife::getIdx(int i, int j) const {
 	return j * dimX + i;
 }
 
-int OpenMPGameOfLife::getNumLiveNeighbors(int i, int j){
+const int OpenMPGameOfLife::getNumLiveNeighbors(int i, int j) const {
 	int neighbors = 0;
-	int idx = getIdx(i, j);
 
 	int n = getIdx(i-1, j);
 	int ne = getIdx(i-1, j+1);

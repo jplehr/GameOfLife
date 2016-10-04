@@ -9,7 +9,7 @@ int main(int argc, char **argv){
 	instance->start();
 #endif
 
-	OpenMPGameOfLife gof(5000, 5000);
+	OpenMPGameOfLife gof(500, 500);
 	gof.init();
 //	gof.print(std::cout);
 	for(int i = 0; i < 100; ++i){

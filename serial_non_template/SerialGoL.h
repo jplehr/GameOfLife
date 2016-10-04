@@ -41,10 +41,10 @@ class GameOfLife {
 
 	private:
 		void applyRules(int i, int j, std::vector<char> &newGrid);
-		int getNumLiveNeighbors(int i, int j);
-		int getIdx(int i, int j);
+		const int getNumLiveNeighbors(int i, int j) const;
+		const int getIdx(int i, int j) const;
 
-		int dimX, dimY;
+		const int dimX, dimY;
 		std::vector<char> gridA, gridB;
 };
 
@@ -112,13 +112,12 @@ void GameOfLife::applyRules(int i, int j, std::vector<char> &newGrid){
 	newGrid.at(idx) = gridA.at(idx);
 }
 
-int GameOfLife::getIdx(int i, int j){
+const int GameOfLife::getIdx(int i, int j) const {
 	return j * dimX + i;
 }
 
-int GameOfLife::getNumLiveNeighbors(int i, int j){
+const int GameOfLife::getNumLiveNeighbors(int i, int j) const {
 	int neighbors = 0;
-	int idx = getIdx(i, j);
 
 	int n = getIdx(i-1, j);
 	int ne = getIdx(i-1, j+1);
