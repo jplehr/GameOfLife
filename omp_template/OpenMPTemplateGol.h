@@ -8,13 +8,13 @@
 #endif
 
 namespace util{
-	static int getIdx(const int i, const int j, const int dimX){
+	static const int getIdx(const int i, const int j, const int dimX){
 		return j * dimX + i;
 	}
 }
 
 struct InitFunction {
-	int operator()(const int i, const int j){
+	const int operator()(const int i, const int j) const {
 		const int v = (j-i > 0)?j-i:1;
 		int r = (i+j) / (1 + v);
 		return (r == 0) ? i+1 : r;
@@ -33,26 +33,20 @@ class GoLStencil {
 		int dimX, dimY;
 };
 
-
 template<typename DType>
 int GoLStencil<DType>::getNumLiveNeighbors(const int i, const int j, const std::vector<DType> &grid){
 	int neighbors = 0;
 	
-	int idx = util::getIdx(i, j, dimX);
-	
 	int w = util::getIdx(i, j-1, dimX);
 	int e = util::getIdx(i, j+1, dimX);
-
-
 	int n = util::getIdx(i-1, j, dimX);
 	int ne = util::getIdx(i-1, j+1, dimX);
 	int nw = util::getIdx(i-1, j-1, dimX);
-
 	int se = util::getIdx(i+1, j+1, dimX);
 	int s = util::getIdx(i+1, j, dimX);
 	int sw = util::getIdx(i+1, j-1, dimX);
 	
-	auto neighborElems = {n, ne, e, se, s , sw, w, nw};
+	const auto neighborElems = {n, ne, e, se, s , sw, w, nw};
 
 	for(const auto &neighbor : neighborElems){
 		if(neighbor >= 0 && neighbor < grid.size()){
@@ -64,7 +58,6 @@ int GoLStencil<DType>::getNumLiveNeighbors(const int i, const int j, const std::
 
 	return neighbors;
 }
-
 
 template<typename DType>
 void GoLStencil<DType>::apply(const int i, const int j, const std::vector<DType> &grid, std::vector<DType> &newGrid){
@@ -127,7 +120,7 @@ class OpenMPGameOfLife {
 		void tick();
 
 	private:
-		int dimX, dimY;
+		const int dimX, dimY;
 		std::vector<DType> gridA, gridB;
 		Stencil s;
 };

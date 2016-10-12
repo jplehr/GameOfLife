@@ -13,7 +13,7 @@ all: gol-templ
 extra: gol-papi 
 
 gol-templ: main.cpp
-	$(CXX) $(CXXFLAGS) -O3 main.cpp -o gol-templ
+	$(CXX) $(CXXFLAGS) -fopenmp -O3 main.cpp -o gol-templ
 
 gol-papi: main.cpp
 	$(CXX) $(CXXFLAGS) -O2 $(PAPI_INC_FLAGS) main.cpp -o gol-papi $(PAPI_LD_FLAGS)
