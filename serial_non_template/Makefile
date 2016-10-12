@@ -12,8 +12,8 @@ all: gol
 
 extra: gol-papi 
 
-gol: main.cpp
-	$(CXX) $(CXXFLAGS) -O3 main.cpp -o gol
+gol: main.cpp SerialGoL.cpp
+	$(CXX) $(CXXFLAGS) -O3 SerialGoL.cpp main.cpp -o gol
 
 gol-papi: main.cpp
 	$(CXX) $(CXXFLAGS) -O2 $(PAPI_INC_FLAGS) main.cpp -o gol-papi $(PAPI_LD_FLAGS)
