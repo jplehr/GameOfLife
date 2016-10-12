@@ -1,4 +1,4 @@
-#include "OpenMPGol.h"
+#include "OpenMPGoL.h"
 
 int main(int argc, char **argv){
 #ifdef PAPI_MEASUREMENT

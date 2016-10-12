@@ -12,8 +12,8 @@ all: gol-omp
 
 extra: gol-papi 
 
-gol-omp: main.cpp
-	$(CXX) $(CXXFLAGS) -O3 -fopenmp main.cpp -o gol-omp
+gol-omp: main.cpp OpenMPGoL.cpp
+	$(CXX) $(CXXFLAGS) -O3 -fopenmp OpenMPGoL.cpp main.cpp -o gol-omp
 
 
 gol-papi: main.cpp
