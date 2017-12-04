@@ -10,13 +10,32 @@ CXXFLAGS=-I. -std=c++11 -Wall -pedantic
 
 all: gol 
 
-extra: gol-papi 
+extra: gol.papi 
 
 gol: main.cpp SerialGoL.cpp
 	$(CXX) $(CXXFLAGS) -O3 SerialGoL.cpp main.cpp -o gol
 
 gol-papi: main.cpp
-	$(CXX) $(CXXFLAGS) -O2 $(PAPI_INC_FLAGS) main.cpp -o gol-papi $(PAPI_LD_FLAGS)
+	$(CXX) $(CXXFLAGS) -O2 $(PAPI_INC_FLAGS) main.cpp -o gol.papi $(PAPI_LD_FLAGS)
+
+gol-clang: main.cpp SerialGoL.cpp
+	clang++ -finstrument-functions -finstrument-functions-whitelist-inputfile=./filter.txt $(CXXFLAGS) -O3 SerialGoL.cpp main.cpp -o gol
+
+gol-scorep: main.cpp SerialGoL.cpp
+	scorep $(CXX) $(CXXFLAGS) -O3 SerialGoL.cpp -c
+	scorep $(CXX) $(CXXFLAGS) -O3 main.cpp -c
+	scorep $(CXX) $(CXXFLAGS) SerialGoL.o main.o -o gol.scorep
+
+
+gol-scorep-filt: main.cpp SerialGoL.cpp
+	scorep --instrument-filter=./scorep-filter-file $(CXX) $(CXXFLAGS) -O3 SerialGoL.cpp -c
+	scorep --instrument-filter=./scorep-filter-file $(CXX) $(CXXFLAGS) -O3 main.cpp -c
+	scorep --instrument-filter=./scorep-filter-file $(CXX) $(CXXFLAGS) SerialGoL.o main.o -o gol.scorep
+
+gol-scorep-test: main.cpp SerialGoL.cpp
+	scorep --instrument-filter=./instrumented-InclStatementCount50.txt $(CXX) $(CXXFLAGS) -O3 SerialGoL.cpp -c
+	scorep --instrument-filter=./instrumented-InclStatementCount50.txt $(CXX) $(CXXFLAGS) -O3 main.cpp -c
+	scorep --instrument-filter=./instrumented-InclStatementCount50.txt $(CXX) $(CXXFLAGS) SerialGoL.o main.o -o gol.scorep
 
 clean:
-	rm -f gol gol-templ gol-papi gol-omp gol-templ-omp gol-papi-finstr
+	rm -f gol gol.templ gol.papi gol.omp gol.templ.omp gol.papi.finstr gol.scorep

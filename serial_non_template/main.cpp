@@ -7,7 +7,7 @@ int main(int argc, char **argv){
 
 	GameOfLife gof(450,450);
 	gof.init();
-	for(int i = 0; i < 100; ++i){
+	for(int i = 0; i < 10; ++i){
 		gof.tick();
 	}
 
