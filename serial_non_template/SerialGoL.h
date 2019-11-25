@@ -20,7 +20,7 @@ extern "C" {
  * Some playground stuff.
  * Maybe usefull for some measurements?
  */
-class GameOfLife {
+class GameOfLife final {
 
 	public:
 		GameOfLife(int numX, int numY) : dimX(numX), dimY(numY), gridA(dimX*dimY), gridB(dimX*dimY){}
